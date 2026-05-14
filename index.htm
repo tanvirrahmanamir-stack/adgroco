@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Menu - Sample Cafe</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f8f9fa; }
+        header { background: #1a1a1a; color: gold; text-align: center; padding: 20px; border-bottom: 3px solid gold; }
+        .container { padding: 15px; }
+        .category-title { color: #333; border-left: 4px solid gold; padding-left: 10px; margin: 20px 0; }
+        
+        .menu-item { 
+            background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .item-info h3 { margin: 0; font-size: 18px; color: #1a1a1a; }
+        .item-info p { margin: 5px 0 0; font-size: 14px; color: #666; }
+        .price { font-weight: bold; color: #e67e22; font-size: 18px; }
+        
+        .order-btn {
+            background: gold; border: none; padding: 10px 15px; border-radius: 5px;
+            font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .order-btn:hover { background: #d4af37; }
+
+        .review-section {
+            background: #eef; padding: 20px; text-align: center; border-radius: 10px; margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>GOLDEN CUP CAFE</h1>
+        <p>Premium Coffee & Snacks</p>
+    </header>
+
+    <div class="container">
+        <h2 class="category-title">Hot Beverages</h2>
+        
+        <div class="menu-item">
+            <div class="item-info">
+                <h3>Caramel Macchiato</h3>
+                <p>Espresso with steamed milk and caramel.</p>
+            </div>
+            <div class="price">15 AED</div>
+            <button class="order-btn" onclick="addToCart('Caramel Macchiato')">Add</button>
+        </div>
+
+        <div class="menu-item">
+            <div class="item-info">
+                <h3>Spanish Latte</h3>
+                <p>Sweetened milk with double shot espresso.</p>
+            </div>
+            <div class="price">18 AED</div>
+            <button class="order-btn" onclick="addToCart('Spanish Latte')">Add</button>
+        </div>
+
+        <h2 class="category-title">Quick Bites</h2>
+        
+        <div class="menu-item">
+            <div class="item-info">
+                <h3>Chicken Club Sandwich</h3>
+                <p>Fresh veggies with grilled chicken.</p>
+            </div>
+            <div class="price">22 AED</div>
+            <button class="order-btn" onclick="addToCart('Chicken Club Sandwich')">Add</button>
+        </div>
+
+        <div class="review-section">
+            <h4>Love our food?</h4>
+            <p>Give us a 5-star review on Google and get 10% off!</p>
+            <button onclick="window.location.href='#'" style="background:#4285F4; color:white; border:none; padding:10px; border-radius:5px;">Write a Review</button>
+        </div>
+    </div>
+
+    <script>
+        function addToCart(itemName) {
+            alert(itemName + " added to your order! We are preparing it.");
+        }
+    </script>
+
+</body>
+</html>
