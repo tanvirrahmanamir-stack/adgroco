@@ -3,216 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD Groco | Abu Dhabi Supermarket</title>
+    <title>AD Groco | Abu Dhabi's Online Supermarket</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        .product-card { border-radius: 12px; overflow: hidden; background: white; border: 1px solid #f1f1f1; display: flex; flex-direction: column; height: 100%; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; }
+        .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #10b981; }
+        .cart-badge { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
-<body class="bg-gray-50 font-sans">
+<body>
 
-    <!-- Header -->
-    <header class="bg-green-800 text-white sticky top-0 z-50 shadow-md">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div onclick="location.reload()" class="cursor-pointer">
-                <h1 class="text-xl font-black">AD GROCO</h1>
-                <p class="text-[10px] uppercase opacity-80">Fast Delivery Abu Dhabi</p>
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight">AD GROCO</h1>
+                <p class="text-[10px] uppercase tracking-widest opacity-80">Abu Dhabi Hypermarket</p>
             </div>
-            <button onclick="openCart()" class="relative bg-green-700 p-2 rounded-lg">
+            <button onclick="toggleCart()" class="relative p-2 bg-green-700 rounded-full hover:bg-green-800 transition">
                 <i class="fas fa-shopping-basket text-xl"></i>
-                <span id="cart-count" class="cart-badge">0</span>
+                <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full cart-badge">0</span>
             </button>
         </div>
-        <div class="container mx-auto px-4 pb-3 text-center">
-            <input type="text" id="search-input" onkeyup="searchProduct()" placeholder="Search rice, milk, soap..." class="w-full p-3 rounded-xl text-black outline-none border-none">
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-green-50 py-6 border-b border-green-100">
+        <div class="container mx-auto px-4">
+            <div class="relative">
+                <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Search rice, milk, oil..." class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-green-200 focus:border-green-500 focus:outline-none shadow-sm">
+                <i class="fas fa-search absolute left-4 top-4 text-green-400 text-lg"></i>
+            </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-6">
-        <div id="product-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"></div>
-    </main>
+    <!-- Categories -->
+    <div class="container mx-auto px-4 py-4 flex gap-3 overflow-x-auto no-scrollbar">
+        <button onclick="filterCategory('all')" class="whitespace-nowrap px-6 py-2 rounded-full bg-green-600 text-white font-semibold shadow-md">All Items</button>
+        <button onclick="filterCategory('Grocery')" class="whitespace-nowrap px-6 py-2 rounded-full bg-white border border-green-200 text-gray-600 font-semibold hover:bg-green-50 transition">Grocery</button>
+        <button onclick="filterCategory('Fresh')" class="whitespace-nowrap px-6 py-2 rounded-full bg-white border border-green-200 text-gray-600 font-semibold hover:bg-green-50 transition">Fresh Food</button>
+    </div>
 
-    <!-- Cart Modal (Updated with Name and Phone) -->
-    <div id="cart-modal" class="modal">
-        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh]">
-            <h2 class="text-xl font-bold mb-4 border-b pb-2 text-green-800">Review Your Order</h2>
+    <!-- Product Grid -->
+    <div class="container mx-auto px-4 py-6">
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <!-- Products will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Cart Sidebar -->
+    <div id="cartModal" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm">
+        <div class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
+            <div class="p-4 border-b flex justify-between items-center bg-green-50">
+                <h2 class="text-xl font-bold text-green-800">Your Shopping Basket</h2>
+                <button onclick="toggleCart()" class="text-2xl text-gray-400 hover:text-red-500">&times;</button>
+            </div>
             
-            <!-- Order Summary -->
-            <div id="cart-items" class="flex-grow overflow-y-auto space-y-3 mb-4"></div>
-            
-            <div class="border-t pt-4">
-                <div class="flex justify-between text-lg font-black mb-4">
-                    <span>Total:</span>
-                    <span id="cart-total" class="text-green-700">0.00 AED</span>
-                </div>
+            <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Cart items here -->
+            </div>
 
-                <!-- Customer Info -->
-                <div class="space-y-3 mb-5">
-                    <div class="relative">
-                        <i class="fas fa-user absolute left-3 top-4 text-gray-400"></i>
-                        <input type="text" id="cust-name" placeholder="Your Full Name" class="w-full p-3 pl-10 border rounded-xl outline-green-500">
-                    </div>
-                    <div class="relative">
-                        <i class="fas fa-phone absolute left-3 top-4 text-gray-400"></i>
-                        <input type="tel" id="cust-phone" placeholder="Mobile Number (05x...)" class="w-full p-3 pl-10 border rounded-xl outline-green-500">
-                    </div>
+            <!-- Checkout Form -->
+            <div class="p-4 border-t bg-gray-50 space-y-3">
+                <input type="text" id="custName" placeholder="Your Full Name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                <input type="tel" id="custPhone" placeholder="Mobile Number (e.g. 050xxxxxxx)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
+                
+                <div class="flex justify-between items-center py-2 border-t mt-2">
+                    <span class="text-gray-600 font-medium">Total Amount:</span>
+                    <span id="cartTotal" class="text-xl font-bold text-green-600">0.00 AED</span>
                 </div>
-
-                <button onclick="sendWhatsAppOrder()" class="w-full bg-green-600 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 hover:bg-green-700 active:scale-95 transition">
-                    <i class="fab fa-whatsapp text-xl"></i> SEND ORDER ON WHATSAPP
+                
+                <button onclick="sendWhatsApp()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition flex items-center justify-center gap-2 shadow-lg shadow-green-200">
+                    <i class="fab fa-whatsapp text-2xl"></i>
+                    ORDER ON WHATSAPP
                 </button>
-                <button onclick="closeModals()" class="w-full mt-3 text-gray-400 text-sm">Continue Shopping</button>
             </div>
         </div>
     </div>
-
-    <!-- Admin Panel -->
-    <div id="admin-modal" class="modal">
-        <div class="bg-white w-full max-w-lg rounded-2xl p-6 max-h-[90vh] flex flex-col">
-            <h2 class="text-xl font-bold mb-4">Store Management</h2>
-            <div class="bg-gray-100 p-4 rounded-xl mb-4">
-                <h3 class="font-bold text-sm mb-2 text-blue-600">Add New Product</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    <input type="text" id="new-name" placeholder="Name" class="p-2 text-xs border rounded">
-                    <input type="number" id="new-price" placeholder="Price" class="p-2 text-xs border rounded">
-                    <input type="text" id="new-img" placeholder="Image URL" class="p-2 text-xs border rounded col-span-2">
-                    <button onclick="addNewProduct()" class="bg-blue-600 text-white p-2 rounded text-xs col-span-2 font-bold">+ ADD TO STORE</button>
-                </div>
-            </div>
-            <div id="admin-list" class="flex-grow overflow-y-auto space-y-2 border-t pt-4"></div>
-            <button onclick="closeModals()" class="mt-4 bg-gray-800 text-white py-3 rounded-xl">Close</button>
-        </div>
-    </div>
-
-    <footer class="py-10 text-center">
-        <button onclick="openAdmin()" class="text-gray-300 text-[10px] tracking-widest uppercase">Admin Login</button>
-    </footer>
 
     <script>
-        let products = [
-            { id: 1, name: "Basmati Rice 5kg", price: 48.50, img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400" },
-            { id: 2, name: "Sunflower Oil 1.5L", price: 16.00, img: "https://images.unsplash.com/photo-1474979266404-7eaacbacf84c?w=400" },
-            { id: 3, name: "Fresh Milk 2L", price: 11.00, img: "https://images.unsplash.com/photo-1563636619-e9107da5a76a?w=400" },
-            { id: 4, name: "Fresh Eggs 30pcs", price: 15.50, img: "https://images.unsplash.com/photo-1582722872445-4435a0f0c76f?w=400" },
-            { id: 5, name: "Tomato Fresh 1kg", price: 4.50, img: "https://images.unsplash.com/photo-1518977676601-b53f02ac6d31?w=400" }
+        const products = [
+            { id: 1, name: "Tilda Basmati Rice", price: 48.50, unit: "5kg", category: "Grocery", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=200" },
+            { id: 2, name: "Alokozay Oil", price: 16.00, unit: "1.5L", category: "Grocery", img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=200" },
+            { id: 3, name: "Almarai Fresh Milk", price: 10.50, unit: "2L", category: "Fresh", img: "https://images.unsplash.com/photo-1550583724-1255818c053b?auto=format&fit=crop&q=80&w=200" },
+            { id: 4, name: "Lipton Tea Bags", price: 14.25, unit: "100 pcs", category: "Grocery", img: "https://images.unsplash.com/photo-1594631252845-29fc458695d7?auto=format&fit=crop&q=80&w=200" },
+            { id: 5, name: "Fresh Red Onion", price: 3.50, unit: "1kg", category: "Fresh", img: "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80&w=200" },
+            { id: 6, name: "Large Farm Eggs", price: 12.00, unit: "30 pcs", category: "Fresh", img: "https://images.unsplash.com/photo-1582721478779-0ae163c05a60?auto=format&fit=crop&q=80&w=200" }
         ];
 
         let cart = [];
 
-        function render() {
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = products.map(p => `
-                <div class="product-card p-3 shadow-sm">
-                    <img src="${p.img}" class="w-full h-32 object-cover rounded-lg mb-2">
-                    <h3 class="text-xs font-bold text-gray-700 h-8 overflow-hidden">${p.name}</h3>
-                    <p class="text-green-700 font-black mt-1">${p.price.toFixed(2)} AED</p>
-                    <button onclick="addToCart(${p.id})" class="mt-3 bg-orange-500 text-white w-full py-2 rounded-lg text-xs font-bold active:scale-95 transition">ADD TO CART</button>
+        function renderProducts(items) {
+            const grid = document.getElementById('productGrid');
+            grid.innerHTML = items.map(p => `
+                <div class="product-card bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm">
+                    <div class="h-32 bg-gray-100 flex items-center justify-center p-2 relative">
+                        <img src="${p.img}" alt="${p.name}" class="h-full w-full object-cover rounded-lg">
+                        <span class="absolute top-2 left-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">${p.category}</span>
+                    </div>
+                    <div class="p-3 flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-gray-800 font-bold text-sm leading-tight mb-1">${p.name}</h3>
+                            <p class="text-gray-400 text-[11px] mb-2">${p.unit}</p>
+                        </div>
+                        <div>
+                            <div class="text-green-600 font-bold text-base mb-2">${p.price.toFixed(2)} AED</div>
+                            <button onclick="addToCart(${p.id})" class="w-full py-2 bg-orange-500 text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition active:scale-95">
+                                ADD TO BASKET
+                            </button>
+                        </div>
+                    </div>
                 </div>
             `).join('');
         }
 
         function addToCart(id) {
-            const p = products.find(x => x.id === id);
-            cart.push(p);
-            document.getElementById('cart-count').innerText = cart.length;
+            const product = products.find(p => p.id === id);
+            const exists = cart.find(item => item.id === id);
+            if(exists) {
+                exists.qty++;
+            } else {
+                cart.push({...product, qty: 1});
+            }
+            updateCart();
         }
 
-        function openCart() {
-            const list = document.getElementById('cart-items');
-            list.innerHTML = cart.map((item, index) => `
-                <div class="flex justify-between items-center bg-gray-50 p-2 rounded-lg text-sm">
-                    <span>${item.name}</span>
-                    <div class="flex items-center gap-3">
-                        <span class="font-bold">${item.price.toFixed(2)}</span>
-                        <button onclick="removeFromCart(${index})" class="text-red-500"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                </div>
-            `).join('');
-            if(cart.length === 0) list.innerHTML = '<p class="text-center text-gray-400">Your basket is empty</p>';
+        function updateCart() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cart-count').innerText = count;
             
-            const total = cart.reduce((sum, i) => sum + i.price, 0).toFixed(2);
-            document.getElementById('cart-total').innerText = total + ' AED';
-            document.getElementById('cart-modal').style.display = 'flex';
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('cart-total').innerText = total.toFixed(2) + ' AED';
+
+            const cartContainer = document.getElementById('cartItems');
+            if(cart.length === 0) {
+                cartContainer.innerHTML = '<div class="text-center py-10 text-gray-400 italic">Your basket is empty!</div>';
+            } else {
+                cartContainer.innerHTML = cart.map(item => `
+                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
+                        <img src="${item.img}" class="w-12 h-12 object-cover rounded">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-sm">${item.name}</h4>
+                            <p class="text-xs text-green-600">${item.price.toFixed(2)} x ${item.qty}</p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 bg-gray-200 rounded">-</button>
+                            <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 bg-gray-200 rounded">+</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
         }
 
-        function removeFromCart(index) {
-            cart.splice(index, 1);
-            document.getElementById('cart-count').innerText = cart.length;
-            openCart();
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            item.qty += delta;
+            if(item.qty < 1) cart = cart.filter(i => i.id !== id);
+            updateCart();
         }
 
-        function sendWhatsAppOrder() {
-            const name = document.getElementById('cust-name').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
+        function toggleCart() {
+            document.getElementById('cartModal').classList.toggle('hidden');
+        }
+
+        function sendWhatsApp() {
+            const name = document.getElementById('custName').value;
+            const phone = document.getElementById('custPhone').value;
             
             if(!name || !phone) {
-                alert("Please enter both Name and Mobile Number!");
+                alert("Please enter your name and phone number");
                 return;
             }
-            if(cart.length === 0) {
-                alert("Your cart is empty!");
-                return;
-            }
+
+            let msg = `*NEW ORDER FROM AD GROCO*%0A---------------------------%0A`;
+            msg += `*Customer:* ${name}%0A`;
+            msg += `*Phone:* ${phone}%0A---------------------------%0A`;
             
-            let total = cart.reduce((sum, i) => sum + i.price, 0).toFixed(2);
-            let itemsList = cart.map(i => `• ${i.name} - ${i.price.toFixed(2)} AED`).join('\n');
+            cart.forEach(item => {
+                msg += `• ${item.name} (${item.qty} x ${item.price.toFixed(2)})%0A`;
+            });
             
-            const message = `*🛒 NEW ORDER FROM AD GROCO*\n\n*👤 Customer:* ${name}\n*📞 Mobile:* ${phone}\n\n*📋 Items Ordered:*\n${itemsList}\n\n*💰 Total Amount:* ${total} AED\n\n_Please confirm the delivery address._`;
-            
-            window.open(`https://wa.me/971553855150?text=${encodeURIComponent(message)}`);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            msg += `---------------------------%0A*TOTAL: ${total.toFixed(2)} AED*`;
+
+            const waUrl = `https://wa.me/971553855150?text=${msg}`;
+            window.open(waUrl, '_blank');
         }
 
-        function openAdmin() {
-            if(prompt("Enter Staff Password:") === "amir2026") {
-                renderAdminList();
-                document.getElementById('admin-modal').style.display = 'flex';
-            }
+        function filterProducts() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+            renderProducts(filtered);
         }
 
-        function renderAdminList() {
-            const list = document.getElementById('admin-list');
-            list.innerHTML = products.map(p => `
-                <div class="flex items-center justify-between p-2 border-b gap-2 text-[10px]">
-                    <span class="w-1/2">${p.name}</span>
-                    <input type="number" step="0.01" value="${p.price}" onchange="updatePrice(${p.id}, this.value)" class="w-14 border rounded p-1">
-                    <button onclick="deleteProduct(${p.id})" class="text-red-500"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
+        function filterCategory(cat) {
+            if(cat === 'all') renderProducts(products);
+            else renderProducts(products.filter(p => p.category === cat));
         }
 
-        function addNewProduct() {
-            const name = document.getElementById('new-name').value;
-            const price = parseFloat(document.getElementById('new-price').value);
-            const img = document.getElementById('new-img').value || "https://images.unsplash.com/photo-1542838132-92c53300491e?w=400";
-            if(name && price) {
-                products.push({ id: Date.now(), name, price, img });
-                render(); renderAdminList();
-                document.getElementById('new-name').value = '';
-                document.getElementById('new-price').value = '';
-                document.getElementById('new-img').value = '';
-            }
-        }
-
-        function updatePrice(id, val) { products.find(x => x.id === id).price = parseFloat(val); render(); }
-        function deleteProduct(id) { products = products.filter(p => p.id !== id); render(); renderAdminList(); }
-        function searchProduct() {
-            const q = document.getElementById('search-input').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(q));
-            const grid = document.getElementById('product-grid');
-            grid.innerHTML = filtered.map(p => `
-                <div class="product-card p-3 shadow-sm">
-                    <img src="${p.img}" class="w-full h-32 object-cover rounded-lg mb-2">
-                    <h3 class="text-xs font-bold text-gray-700 h-8 overflow-hidden">${p.name}</h3>
-                    <p class="text-green-700 font-black mt-1">${p.price.toFixed(2)} AED</p>
-                    <button onclick="addToCart(${p.id})" class="mt-3 bg-orange-500 text-white w-full py-2 rounded-lg text-xs font-bold">ADD TO CART</button>
-                </div>`).join('');
-        }
-        function closeModals() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-        render();
+        // Initial Load
+        renderProducts(products);
     </script>
 </body>
 </html>
