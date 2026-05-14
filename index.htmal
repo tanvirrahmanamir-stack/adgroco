@@ -3,171 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD Groco | Abu Dhabi's Online Supermarket</title>
+    <title>AD Groco - Abu Dhabi</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
-        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; }
-        .product-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; }
-        .product-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: #10b981; }
-        .cart-badge { animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .product-img { height: 150px; width: 100%; object-fit: contain; }
     </style>
 </head>
-<body>
+<body class="bg-gray-100 pb-20">
 
-    <!-- Navigation -->
-    <nav class="bg-green-600 text-white sticky top-0 z-50 shadow-lg">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">AD GROCO</h1>
-                <p class="text-[10px] uppercase tracking-widest opacity-80">Abu Dhabi Hypermarket</p>
-            </div>
-            <button onclick="toggleCart()" class="relative p-2 bg-green-700 rounded-full hover:bg-green-800 transition">
-                <i class="fas fa-shopping-basket text-xl"></i>
-                <span id="cart-count" class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full cart-badge">0</span>
+    <!-- Header -->
+    <header class="bg-green-700 text-white p-4 sticky top-0 z-50 shadow-md flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold">AD GROCO</h1>
+            <p class="text-[10px] uppercase">Abu Dhabi Online Supermarket</p>
+        </div>
+        <div class="relative">
+            <i class="fas fa-shopping-cart text-2xl"></i>
+            <span id="cart-count" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1.5">0</span>
+        </div>
+    </header>
+
+    <!-- Product List -->
+    <div class="p-4 grid grid-cols-2 gap-4" id="products">
+        <!-- Products will appear here -->
+    </div>
+
+    <!-- Order Summary Bar -->
+    <div id="order-bar" class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg hidden">
+        <div class="flex flex-col gap-2">
+            <input type="text" id="custName" placeholder="আপনার নাম (Your Name)" class="border p-2 rounded w-full text-sm">
+            <input type="tel" id="custPhone" placeholder="মোবাইল নম্বর (Phone)" class="border p-2 rounded w-full text-sm">
+            <button onclick="sendWhatsApp()" class="bg-green-600 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2">
+                <i class="fab fa-whatsapp"></i> WHATSAPP ORDER
             </button>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <div class="bg-green-50 py-6 border-b border-green-100">
-        <div class="container mx-auto px-4">
-            <div class="relative">
-                <input type="text" id="searchInput" onkeyup="filterProducts()" placeholder="Search rice, milk, oil..." class="w-full pl-12 pr-4 py-3 rounded-xl border-2 border-green-200 focus:border-green-500 focus:outline-none shadow-sm">
-                <i class="fas fa-search absolute left-4 top-4 text-green-400 text-lg"></i>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categories -->
-    <div class="container mx-auto px-4 py-4 flex gap-3 overflow-x-auto no-scrollbar">
-        <button onclick="filterCategory('all')" class="whitespace-nowrap px-6 py-2 rounded-full bg-green-600 text-white font-semibold shadow-md">All Items</button>
-        <button onclick="filterCategory('Grocery')" class="whitespace-nowrap px-6 py-2 rounded-full bg-white border border-green-200 text-gray-600 font-semibold hover:bg-green-50 transition">Grocery</button>
-        <button onclick="filterCategory('Fresh')" class="whitespace-nowrap px-6 py-2 rounded-full bg-white border border-green-200 text-gray-600 font-semibold hover:bg-green-50 transition">Fresh Food</button>
-    </div>
-
-    <!-- Product Grid -->
-    <div class="container mx-auto px-4 py-6">
-        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <!-- Products will be loaded here -->
-        </div>
-    </div>
-
-    <!-- Cart Sidebar -->
-    <div id="cartModal" class="fixed inset-0 bg-black/60 z-[60] hidden backdrop-blur-sm">
-        <div class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col">
-            <div class="p-4 border-b flex justify-between items-center bg-green-50">
-                <h2 class="text-xl font-bold text-green-800">Your Shopping Basket</h2>
-                <button onclick="toggleCart()" class="text-2xl text-gray-400 hover:text-red-500">&times;</button>
-            </div>
-            
-            <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4">
-                <!-- Cart items here -->
-            </div>
-
-            <!-- Checkout Form -->
-            <div class="p-4 border-t bg-gray-50 space-y-3">
-                <input type="text" id="custName" placeholder="Your Full Name" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
-                <input type="tel" id="custPhone" placeholder="Mobile Number (e.g. 050xxxxxxx)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 outline-none">
-                
-                <div class="flex justify-between items-center py-2 border-t mt-2">
-                    <span class="text-gray-600 font-medium">Total Amount:</span>
-                    <span id="cartTotal" class="text-xl font-bold text-green-600">0.00 AED</span>
-                </div>
-                
-                <button onclick="sendWhatsApp()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition flex items-center justify-center gap-2 shadow-lg shadow-green-200">
-                    <i class="fab fa-whatsapp text-2xl"></i>
-                    ORDER ON WHATSAPP
-                </button>
-            </div>
         </div>
     </div>
 
     <script>
-        const products = [
-            { id: 1, name: "Tilda Basmati Rice", price: 48.50, unit: "5kg", category: "Grocery", img: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=200" },
-            { id: 2, name: "Alokozay Oil", price: 16.00, unit: "1.5L", category: "Grocery", img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=200" },
-            { id: 3, name: "Almarai Fresh Milk", price: 10.50, unit: "2L", category: "Fresh", img: "https://images.unsplash.com/photo-1550583724-1255818c053b?auto=format&fit=crop&q=80&w=200" },
-            { id: 4, name: "Lipton Tea Bags", price: 14.25, unit: "100 pcs", category: "Grocery", img: "https://images.unsplash.com/photo-1594631252845-29fc458695d7?auto=format&fit=crop&q=80&w=200" },
-            { id: 5, name: "Fresh Red Onion", price: 3.50, unit: "1kg", category: "Fresh", img: "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?auto=format&fit=crop&q=80&w=200" },
-            { id: 6, name: "Large Farm Eggs", price: 12.00, unit: "30 pcs", category: "Fresh", img: "https://images.unsplash.com/photo-1582721478779-0ae163c05a60?auto=format&fit=crop&q=80&w=200" }
+        const productList = [
+            { id: 1, name: "Tilda Basmati Rice", price: 48.50, unit: "5kg", img: "https://www.tilda.com/wp-content/uploads/2019/10/Pure-Basmati-5kg-Front-1.png" },
+            { id: 2, name: "Alokozay Oil", price: 16.00, unit: "1.5L", img: "https://m.media-amazon.com/images/I/51uY0C0tNKL._AC_SL1000_.jpg" },
+            { id: 3, name: "Almarai Fresh Milk", price: 10.50, unit: "2L", img: "https://m.media-amazon.com/images/I/61I2e-f-X9L._AC_SL1500_.jpg" },
+            { id: 4, name: "Fresh Red Onion", price: 3.50, unit: "1kg", img: "https://5.imimg.com/data5/BT/XQ/MY-45112101/red-onion-500x500.jpg" },
+            { id: 5, name: "Lipton Tea", price: 14.25, unit: "100 Bags", img: "https://m.media-amazon.com/images/I/71u92vMvWpL._AC_SL1500_.jpg" },
+            { id: 6, name: "Nutella Spread", price: 22.00, unit: "400g", img: "https://m.media-amazon.com/images/I/71X8f8-A+1L._AC_SL1500_.jpg" }
         ];
 
         let cart = [];
 
-        function renderProducts(items) {
-            const grid = document.getElementById('productGrid');
-            grid.innerHTML = items.map(p => `
-                <div class="product-card bg-white rounded-2xl overflow-hidden flex flex-col shadow-sm">
-                    <div class="h-32 bg-gray-100 flex items-center justify-center p-2 relative">
-                        <img src="${p.img}" alt="${p.name}" class="h-full w-full object-cover rounded-lg">
-                        <span class="absolute top-2 left-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full font-bold">${p.category}</span>
-                    </div>
-                    <div class="p-3 flex-1 flex flex-col justify-between">
-                        <div>
-                            <h3 class="text-gray-800 font-bold text-sm leading-tight mb-1">${p.name}</h3>
-                            <p class="text-gray-400 text-[11px] mb-2">${p.unit}</p>
-                        </div>
-                        <div>
-                            <div class="text-green-600 font-bold text-base mb-2">${p.price.toFixed(2)} AED</div>
-                            <button onclick="addToCart(${p.id})" class="w-full py-2 bg-orange-500 text-white rounded-lg text-xs font-bold hover:bg-orange-600 transition active:scale-95">
-                                ADD TO BASKET
-                            </button>
-                        </div>
+        function displayProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = productList.map(p => `
+                <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-200 flex flex-col justify-between">
+                    <img src="${p.img}" alt="${p.name}" class="product-img mb-2">
+                    <div>
+                        <h3 class="font-bold text-sm text-gray-800">${p.name}</h3>
+                        <p class="text-xs text-gray-500 mb-2">${p.unit}</p>
+                        <p class="text-green-600 font-bold mb-2">${p.price.toFixed(2)} AED</p>
+                        <button onclick="addToCart(${p.id})" class="w-full bg-orange-500 text-white py-2 rounded-lg text-xs font-bold active:bg-orange-600">ADD TO CART</button>
                     </div>
                 </div>
             `).join('');
         }
 
         function addToCart(id) {
-            const product = products.find(p => p.id === id);
-            const exists = cart.find(item => item.id === id);
-            if(exists) {
-                exists.qty++;
-            } else {
-                cart.push({...product, qty: 1});
-            }
-            updateCart();
-        }
-
-        function updateCart() {
-            const count = cart.reduce((sum, item) => sum + item.qty, 0);
-            document.getElementById('cart-count').innerText = count;
-            
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            document.getElementById('cart-total').innerText = total.toFixed(2) + ' AED';
-
-            const cartContainer = document.getElementById('cartItems');
-            if(cart.length === 0) {
-                cartContainer.innerHTML = '<div class="text-center py-10 text-gray-400 italic">Your basket is empty!</div>';
-            } else {
-                cartContainer.innerHTML = cart.map(item => `
-                    <div class="flex items-center gap-3 bg-gray-50 p-2 rounded-lg">
-                        <img src="${item.img}" class="w-12 h-12 object-cover rounded">
-                        <div class="flex-1">
-                            <h4 class="font-bold text-sm">${item.name}</h4>
-                            <p class="text-xs text-green-600">${item.price.toFixed(2)} x ${item.qty}</p>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 bg-gray-200 rounded">-</button>
-                            <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 bg-gray-200 rounded">+</button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function changeQty(id, delta) {
-            const item = cart.find(i => i.id === id);
-            item.qty += delta;
-            if(item.qty < 1) cart = cart.filter(i => i.id !== id);
-            updateCart();
-        }
-
-        function toggleCart() {
-            document.getElementById('cartModal').classList.toggle('hidden');
+            const item = productList.find(p => p.id === id);
+            cart.push(item);
+            document.getElementById('cart-count').innerText = cart.length;
+            document.getElementById('order-bar').classList.remove('hidden');
         }
 
         function sendWhatsApp() {
@@ -175,38 +80,26 @@
             const phone = document.getElementById('custPhone').value;
             
             if(!name || !phone) {
-                alert("Please enter your name and phone number");
+                alert("আপনার নাম ও মোবাইল নম্বর দিন");
                 return;
             }
 
-            let msg = `*NEW ORDER FROM AD GROCO*%0A---------------------------%0A`;
-            msg += `*Customer:* ${name}%0A`;
-            msg += `*Phone:* ${phone}%0A---------------------------%0A`;
+            let message = `*NEW ORDER - AD GROCO*%0A%0A`;
+            message += `*Name:* ${name}%0A*Phone:* ${phone}%0A%0A`;
+            message += `*Items:*%0A`;
             
-            cart.forEach(item => {
-                msg += `• ${item.name} (${item.qty} x ${item.price.toFixed(2)})%0A`;
+            let total = 0;
+            cart.forEach((item, index) => {
+                message += `${index+1}. ${item.name} - ${item.price.toFixed(2)} AED%0A`;
+                total += item.price;
             });
+
+            message += `%0A*TOTAL AMOUNT: ${total.toFixed(2)} AED*`;
             
-            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            msg += `---------------------------%0A*TOTAL: ${total.toFixed(2)} AED*`;
-
-            const waUrl = `https://wa.me/971553855150?text=${msg}`;
-            window.open(waUrl, '_blank');
+            window.open(`https://wa.me/971553855150?text=${message}`, '_blank');
         }
 
-        function filterProducts() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = products.filter(p => p.name.toLowerCase().includes(term));
-            renderProducts(filtered);
-        }
-
-        function filterCategory(cat) {
-            if(cat === 'all') renderProducts(products);
-            else renderProducts(products.filter(p => p.category === cat));
-        }
-
-        // Initial Load
-        renderProducts(products);
+        displayProducts();
     </script>
 </body>
 </html>
