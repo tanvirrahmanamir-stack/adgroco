@@ -3,84 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Digital Menu - Sample Cafe</title>
+    <title>AD Digital Menu | Scan & Order</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: #f8f9fa; }
-        header { background: #1a1a1a; color: gold; text-align: center; padding: 20px; border-bottom: 3px solid gold; }
-        .container { padding: 15px; }
-        .category-title { color: #333; border-left: 4px solid gold; padding-left: 10px; margin: 20px 0; }
-        
-        .menu-item { 
-            background: #fff; border-radius: 10px; padding: 15px; margin-bottom: 15px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .item-info h3 { margin: 0; font-size: 18px; color: #1a1a1a; }
-        .item-info p { margin: 5px 0 0; font-size: 14px; color: #666; }
-        .price { font-weight: bold; color: #e67e22; font-size: 18px; }
-        
-        .order-btn {
-            background: gold; border: none; padding: 10px 15px; border-radius: 5px;
-            font-weight: bold; cursor: pointer; transition: 0.3s;
-        }
-        .order-btn:hover { background: #d4af37; }
-
-        .review-section {
-            background: #eef; padding: 20px; text-align: center; border-radius: 10px; margin-top: 30px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;600;700&display=swap');
+        body { font-family: 'Lexend', sans-serif; background-color: #fcfcfc; }
+        .menu-item { transition: 0.3s; background: white; border-bottom: 1px solid #f0f0f0; }
+        .menu-item:active { background-color: #f9f9f9; }
+        .category-pill { white-space: nowrap; transition: 0.3s; }
+        .active-cat { background-color: #ef4444; color: white; border-color: #ef4444; }
     </style>
 </head>
-<body>
+<body class="pb-40">
 
-    <header>
-        <h1>GOLDEN CUP CAFE</h1>
-        <p>Premium Coffee & Snacks</p>
-    </header>
+    <div class="bg-white px-6 pt-8 pb-4 shadow-sm text-center">
+        <div class="w-20 h-20 bg-red-500 rounded-full mx-auto mb-3 flex items-center justify-center text-white text-3xl font-bold shadow-lg">
+            AD
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">AD CAFE & GRILL</h1>
+        <p class="text-gray-500 text-sm italic">Authentic Taste, Abu Dhabi</p>
+    </div>
 
-    <div class="container">
-        <h2 class="category-title">Hot Beverages</h2>
+    <div class="bg-red-50 text-red-600 text-[10px] py-1 text-center font-bold uppercase tracking-widest">
+        Digital Menu Card
+    </div>
+
+    <div class="flex gap-3 overflow-x-auto px-4 py-6 no-scrollbar">
+        <button onclick="filterItems('all')" id="btn-all" class="category-pill active-cat px-6 py-2 rounded-full border font-semibold text-sm">All</button>
+        <button onclick="filterItems('Main')" id="btn-Main" class="category-pill px-6 py-2 rounded-full border font-semibold text-sm">Main Course</button>
+        <button onclick="filterItems('Drinks')" id="btn-Drinks" class="category-pill px-6 py-2 rounded-full border font-semibold text-sm">Drinks</button>
+        <button onclick="filterItems('Snacks')" id="btn-Snacks" class="category-pill px-6 py-2 rounded-full border font-semibold text-sm">Snacks</button>
+    </div>
+
+    <div id="menu-list" class="px-4 space-y-1">
+        </div>
+
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-6 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-50 rounded-t-3xl">
+        <div class="flex justify-between items-center mb-4">
+            <span class="text-gray-500 font-medium">Cart Total:</span>
+            <span id="total-price" class="text-2xl font-bold text-red-600">0.00 AED</span>
+        </div>
         
-        <div class="menu-item">
-            <div class="item-info">
-                <h3>Caramel Macchiato</h3>
-                <p>Espresso with steamed milk and caramel.</p>
-            </div>
-            <div class="price">15 AED</div>
-            <button class="order-btn" onclick="addToCart('Caramel Macchiato')">Add</button>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+            <input type="text" id="custName" placeholder="Name" class="bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-red-500 outline-none">
+            <input type="tel" id="custTable" placeholder="Table No" class="bg-gray-50 border-none p-3 rounded-xl text-sm focus:ring-2 focus:ring-red-500 outline-none">
         </div>
 
-        <div class="menu-item">
-            <div class="item-info">
-                <h3>Spanish Latte</h3>
-                <p>Sweetened milk with double shot espresso.</p>
-            </div>
-            <div class="price">18 AED</div>
-            <button class="order-btn" onclick="addToCart('Spanish Latte')">Add</button>
-        </div>
-
-        <h2 class="category-title">Quick Bites</h2>
-        
-        <div class="menu-item">
-            <div class="item-info">
-                <h3>Chicken Club Sandwich</h3>
-                <p>Fresh veggies with grilled chicken.</p>
-            </div>
-            <div class="price">22 AED</div>
-            <button class="order-btn" onclick="addToCart('Chicken Club Sandwich')">Add</button>
-        </div>
-
-        <div class="review-section">
-            <h4>Love our food?</h4>
-            <p>Give us a 5-star review on Google and get 10% off!</p>
-            <button onclick="window.location.href='#'" style="background:#4285F4; color:white; border:none; padding:10px; border-radius:5px;">Write a Review</button>
-        </div>
+        <button onclick="sendOrder()" class="w-full bg-gray-900 text-white py-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-black transition">
+            <i class="fab fa-whatsapp text-xl text-green-400"></i> PLACE ORDER
+        </button>
     </div>
 
     <script>
-        function addToCart(itemName) {
-            alert(itemName + " added to your order! We are preparing it.");
-        }
-    </script>
+        const items = [
+            { id: 1, name: "Grilled Chicken", price: 35.00, desc: "Served with garlic sauce and fries", cat: "Main", img: "https://images.unsplash.com/photo-1598515214211-89d3c73ae83b?q=80&w=200" },
+            { id: 2, name: "Special Beef Burger", price: 28.00, desc: "Double patty with cheese", cat: "Main", img: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=200" },
+            { id: 3, name: "Iced Spanish Latte", price: 22.00, desc: "Creamy espresso with cold milk", cat: "Drinks", img: "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=200" },
+            { id: 4, name: "Fresh Mojito", price: 15.00, desc: "Mint, lime and soda", cat: "Drinks", img: "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?q=80&w=200" },
+            { id: 5, name: "French Fries", price: 12.00, desc: "Classic salted crispy fries", cat: "Snacks", img: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?q=80&w=200" }
+        ];
 
+        let cart = [];
+
+        function render(filter = 'all') {
+            const list = document.getElementById('menu-list');
+            const filtered = filter === 'all' ? items : items.filter(i => i.cat === filter);
+            
+            list.innerHTML = filtered.map(i => `
+                <div class="menu-item flex items-center p-3 rounded-2xl">
+                    <img src="${i.img}" class="w-16 h-16 object-cover rounded-xl shadow-sm mr-4">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-gray-800 text-sm">${i.name}</h3>
+                        <p class="text-[10px] text-gray-400 leading-tight">${i.desc}</p>
+                        <p class="text-red-600 font-bold text-sm mt-1">${i.price.toFixed(2)} AED</p>
+                    </div>
+                    <button onclick="addToCart(${i.id})" class="bg-gray-100 text-gray-800 w-8 h-8 rounded-full font-bold flex items-center justify-center hover:bg-red-500 hover:text-white">+</button>
+                </div>
+            `).join('');
+        }
+
+        function filterItems(cat) {
+            document.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active-cat'));
+            document.getElementById('btn-' + cat).classList.add('active-cat');
+            render(cat);
+        }
+
+        function addToCart(id) {
+            const item = items.find(i => i.id === id);
+            cart.push(item);
+            const total = cart.reduce((sum, i) => sum + i.price, 0);
+            document.getElementById('total-price').innerText = total.toFixed(2) + ' AED';
+        }
+
+        function sendOrder() {
+            const name = document.getElementById('custName').value;
+            const table = document.getElementById('custTable').value;
+            if(!name || cart.length === 0) { alert("Please enter your name and select food!"); return; }
+
+            let msg = `*NEW DIGITAL ORDER*%0A*Customer:* ${name}%0A*Table:* ${table}%0A%0A*Items:*%0A`;
+            cart.forEach((i, index) => { msg += `${index+1}. ${i.name} - ${i.price} AED%0A`; });
+            const total = cart.reduce((sum, i) => sum + i.price, 0);
+            msg += `%0A*TOTAL: ${total.toFixed(2)} AED*`;
+
+            window.open(`https://wa.me/971553855150?text=${msg}`);
+        }
+
+        render();
+    </script>
 </body>
 </html>
